@@ -1,102 +1,132 @@
-# 001 : Pixel Manipulations #
+# 002 : Line Drawing #
 
 ## Usage ##
 
-## With VSCode/Live-Server Extension ##
+Either use [VSCode/Live-Server
+Extension](https://github.com/tiet-ucs505/001-pixel#with-vscodelive-server-extension)
+or use
+[BrowerSync](https://github.com/tiet-ucs505/001-pixel#with-browsersync)
 
-1. Install VSCode;
-2. Install [Live Server
-Extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer);
-3. As per official docs, "Launch a local development
-server with live reload feature for static & dynamic
-pages."
+## Line Drawing ##
 
-![](https://github.com/ritwickdey/vscode-live-server/raw/HEAD/images/Screenshot/vscode-live-server-animated-demo.gif)
+Given an image space $\Omega\subset\mathbb{Z}^2$ with
+resolution $[W,H]^T$.  A point (or a pixel) is denoted
+as $[x_a,y_a]^T\equiv\mathbf{a}\in\Omega$. 
 
-## With BrowserSync ##
+Color value at pixel $\mathbf{a}$ is denoted as a point
+in unit cube,
+$\mathrm{color}\_{\nu}(\mathbf{a})\in\mathbb{R}^D_{[0,1]}$,
+where $D$ represents channel depth. $D=1$ for a bitmap
+or a grayscale image; $D=3$ for RGB; and $D=4$ for
+RGBA. For all practical purposes, the color value is
+resolved into an integer value with 8-bit depth and
+discretised for ease of representation and storage, so
+that
+$\mathrm{color}(\mathbf{a})\in\mathbb{Z}^D_{[0,255]}$.
 
-1. Install BrowserSync,
-2. Descend into the directory and launch using:
+### Naïve ###
 
-```sh
-browser-sync -w
+
+Given points $\mathbf{p},\mathbf{q}\in\Omega$ and line
+resolution $N$, compute and plot on canvas, the set of
+points $\mathbb{S}_p$ as follows:
+
+```math
+\begin{align}
+  \notag
+  r(t) &= \left\lceil(1-t)\mathbf{p} + t\mathbf{q}
+    \right\rceil
+  \\
+  %
+  \mathbb{S}_p&\equiv
+  \{\mathbf{x}_i=r(i/N):
+    0\leqslant i\in\mathbb{Z}\leqslant N\}
+\end{align}
 ```
 
-## Using Web Browser Context ##
+where, $\lceil\mathbf{v}\rceil$ denotes ceiling
+truncation for all components of vector $\mathbf{v}$.
 
-Three major operations for pixel level graphic
-manipulation using HTML Canvas.
+### DDA Algo ###
 
-### Get 2D Javascript Canvas Context ###
+#### Optimising for $N$ ####
 
-This consists of two steps,
-1. Get a handle to the HTML Canvas Element;
-2. Retrieve "2d" context.
+We resolve the line into pixel counts into the larger
+of the distance between the two endpoints resolved into
+each of the axes; and compute the value of the
+ordinates along the other axis.
 
-```javascript
-/**
- * Params:
- *  canvas: canvas element or its selector.
- */
-function getCtx(canvasOrSelector) {
-  let canvas = canvasOrSelector
-  if (canvas instanceof String)
-    canvas = document.querySelector(canvas)
+So, $N = \max(|x_{p-q}|, |y_{p-q}|)$.
 
-  return canvas.getContext('2d')
-}
+If $|y_{p-q}| < |x_{p-q}|$,
+```math
+\begin{align}
+\notag
+y_i &= \left\lceil y_q + i\frac{y_{p-q}}{x_{p-q}} 
+  \right\rceil
+\\
+%
+\notag
+x_i &= x_q + i\times\mathrm{sgn}(x_{p-q})
+\end{align}
 ```
 
-### Image I/O ###
-
-To read image data, use
-[`getImageData`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)
-function, and specify the start (i.e. top-left) and end
-(i.e. bottom-right) pixel coordinates for the slice of
-the image required to be read.
-
-To write, the slice back, similarly use
-[`putImageData`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData)
-
-```javascript
-// getImageData
-let canvas = document.querySelector('#canvasImg')
-let ctx = canvas.getContext('2d') 
-let [x0,y0,W,H] = [0, 0, canvas.width, canvas.height]
-let imData = ctx.getImageData(x0,y0,W,H)
-
-// putImageData
-ctx.putImageData(imData, x0, y0)
-```
-
-### Image Data Manipulation ###
-
-```javascript
-/**
- * Adapted from here:
- * https://www.measurethat.net/Benchmarks/Show/8386/0/setting-canvas-pixel-with-lots-of-iterations
- */
-
-function asUint8 (a) {
-  return Math.min(255, Math.max(0, a << 0))
-}
-
-function setPixel(imData, H, W, x, y, r, g, b, a) {
-  const px = {
-    x: asUint8(x),
-    y: asUint8(y),
-    r: asUint8(r),
-    g: asUint8(g),
-    b: asUint8(b),
-    a: asUint8(a),
-  }
-  px.rgba = [px.r, px.g, px.b, px.a]
-
-  const offset = (px.y * W + px.x) * 4
-
-  const pixels = imData.data
-  pixels.set(px.rgba, offset)
-}
+Otherwise,
+```math
+\begin{align}
+\notag
+x_i &= \left\lceil x_q + i\frac{x_{p-q}}{y_{p-q}} 
+  \right\rceil
+\\
+%
+\notag
+y_i &= y_q + i\times\mathrm{sgn}(y_{p-q})
+\end{align}
 ```
 
 
+And finally,
+```math
+\begin{align}
+\mathbb{S}_p &= \{
+  [x_i,y_i]^T:0\leqslant i\in\mathbb{Z} \leqslant N
+  \}
+\end{align}
+```
+
+
+#### Optimising for arithmetic operations ####
+
+Precomputing,
+
+```math
+\begin{align}
+    \notag
+    m &= \frac{y_{p-q}}{x_{p-q}}
+    \\
+    %
+    \notag
+    m' &= \frac{x_{p-q}}{y_{p-q}}
+    \\
+    %
+    \notag
+    r(0) &= \mathbf{q}
+\end{align}
+```
+
+We can rewrite the sequence as the following
+recurrence,
+
+```math
+\begin{align}
+\mathrm{inc}(i) &= \begin{cases}
+[\mathrm{sgn}(x_{p-q}), m]^T, &\text{if}\quad |y_{p-q}|
+< |x_{p-q}|; \\
+[m', \mathrm{sgn}(y_{p-q})]^T, &\text{otherwise.}
+\end{cases}
+\\
+r(i) &= r(i-1) + inc(i) \\
+\mathbb{S}_p &= \{r(i):0\leqslant i\in\mathbb{Z}
+\leqslant N\}
+\end{align}
+```
