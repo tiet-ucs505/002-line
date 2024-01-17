@@ -57,6 +57,7 @@ ordinates along the other axis.
 So, $N = \max(|x_{p-q}|, |y_{p-q}|)$.
 
 If $|y_{p-q}| < |x_{p-q}|$,
+
 $$\begin{align}
 \notag
 y_i &= \left\lceil y_q + i\frac{y_{p-q}}{x_{p-q}} 
@@ -68,6 +69,7 @@ x_i &= x_q + i\times\mathrm{sgn}(x_{p-q})
 \end{align}$$
 
 Otherwise,
+
 $$\begin{align}
 \notag
 x_i &= \left\lceil x_q + i\frac{x_{p-q}}{y_{p-q}} 
@@ -80,6 +82,7 @@ y_i &= y_q + i\times\mathrm{sgn}(y_{p-q})
 
 
 And finally,
+
 $$\begin{align}
 \mathbb{S}_p &= \{
   [x_i,y_i]^T:0\leqslant i\in\mathbb{Z} \leqslant N
@@ -154,24 +157,21 @@ y_{k+1} &= y_k+\begin{cases}
 \end{align}$$
 
 The condition $\delta_{k+1}<0$ indicates that
-$\|\mathbf{r}_1-\mathbf{r}\|<\|\mathbf{r}-\mathbf{r}_2\|$
+$\\|\mathbf{r}_1-\mathbf{r}\\|<\\|\mathbf{r}-\mathbf{r}_2\\|$
 
-$$\begin{align}
+```math
+\begin{align}
 \|\mathbf{r}_1-\mathbf{r}\|-\|\mathbf{r}-\mathbf{r}_2\|
-&= \mathrm{sgn}(y_{q-p})(y_k-m(x_k+1)-b
--m(x_k+1)-b+y_k+\mathrm{sgn}(y_{q-p}))
+&= \mathrm{sgn}(y_{q-p})(y_k-m(x_k+1)-b -m(x_k+1)-b+y_k+\mathrm{sgn}(y_{q-p}))
 \\
-&= \mathrm{sgn}(y_{q-p})(2y_k-2mx_k+\mathrm{sgn}(y_{q-p})
--2m-2b)
+&= \mathrm{sgn}(y_{q-p})(2y_k-2mx_k+\mathrm{sgn}(y_{q-p}) -2m-2b)
 \\
-x_{q-p}(\|\mathbf{r}_1-\mathbf{r}\| -
-\|\mathbf{r}-\mathbf{r}_2\|) 
-&= \mathrm{sgn}(y_{q-p})(2y_kx_{q-p}
--2x_ky_{q-p} -
-x_{q-p}(2b-\mathrm{sgn}(y_{q-p}))-2y_{q-p})
-\\
+x_{q-p}(\|\mathbf{r}_1-\mathbf{r}\| - \|\mathbf{r}-\mathbf{r}_2\|) 
+&= \mathrm{sgn}(y_{q-p})(2y_kx_{q-p} -2x_ky_{q-p} - x_{q-p}(2b-\mathrm{sgn}(y_{q-p}))-2y_{q-p}) \\
 &\equiv \delta_{k+1}
-\end{align}$$
+\end{align}
+```
+
 
 Hence, computing $\delta_{k+1}$ is a fully integer
 operation.  And unfolding the signum, we can rewrite
@@ -192,6 +192,7 @@ $$\begin{align}
 Similarly, for $x=m'y+b'$; $|m'|\lt1; y_p\leqslant y_q$
 and starting at $\mathbf{p}_0=\mathbf{p}$ moving
 towards $\mathbf{q}$, we have,
+
 $$\begin{align}
 \notag
 y_{k+1} &= y_k+1
