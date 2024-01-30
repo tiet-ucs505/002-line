@@ -41,7 +41,8 @@ export class CanvasImage {
   }
 
   flush () {
-    this.ctx
+    if (this.#pixels !== null)
+      this.ctx
       .putImageData(this.#pixels, 0, 0)
   }
 }

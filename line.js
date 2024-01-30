@@ -17,7 +17,11 @@ function main () {
   console.log('Raghav (Not a student)')
 
   const canvasEl = document.querySelector('#myCanvas')
-  const {height:H, width: W} = canvasEl
+  const H = parseFloat(canvasEl.style.height)
+  const W = parseFloat(canvasEl.style.width)
+  canvasEl.height = H
+  canvasEl.width = W
+
   // const obj = {
   //   H: H,
   //   W: W
@@ -28,9 +32,9 @@ function main () {
   const canvas = new CanvasImage('#myCanvas')
   console.log(canvas)
 
-  const p0 = [0,0]
-  const p1 = [45,32]
-  const N = 100
+  const p0 = [40,40]
+  const p1 = [85,72]
+  const N = 15
 
   const linePixels = (
     getLineVecs(p0, p1, N)
